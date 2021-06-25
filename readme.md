@@ -9,15 +9,28 @@ If using [assertion helper functions](#assert), make sure assertions are turned 
 
     zend.assertions = 1
 
-## Recommended setup
-- create a `test` folder next to your `src` folder
-- put `kiss_tests.php` in the folder
-- create a `test/test_files` folder (name can be customized)
-- create x number of `test/test_files/test_*.php` files containing your tests
+## Recommended setup (submodule)
+- create a `tests` folder next to your `src` folder
+- create a `submodules` folder next to your `src` folder
+- go to submodules folder
+- grab KissTests from github using `git submodule add https://github.com/cdjames/KissTests`
+- create x number of `test/test_*.php` files containing your tests
     - be sure to include your source file(s)!
 - add the following to one of the test files or a separate file:
 
 ```
+<?php
+use function \KissTests\Assertions\assert_equal;
+use function \KissTests\Assertions\assert_unequal;
+use function \KissTests\Assertions\assert_exception;
+use function \KissTests\Assertions\turn_on_assertions;
+use \KissTests\TestSuite;
+use \KissTests\en_mode;
+
+
+// your tests
+
+
 turn_on_assertions(); // may be optional depending on your setup
 
 $ts = new TestSuite($mode=en_mode::VRBS);
@@ -27,6 +40,7 @@ if($ts_assembled) {
     $ts->run_suite();
     $ts->print_current_results();
 }
+?>
 ```
 - run the tests: `php path/to/above/code.php`
 
