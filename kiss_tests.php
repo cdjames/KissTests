@@ -1,6 +1,6 @@
 <?php
 
-namespace Helpers\Files {
+namespace KissTests\Helpers\Files {
 
     function pathjoin(Array $elements = null)
     {
@@ -58,7 +58,7 @@ namespace KissTests\Assertions {
 }
 
 namespace KissTests {
-    use function \Helpers\Files\pathjoin;
+    use function \KissTests\Helpers\Files\pathjoin;
     abstract class en_mode { // an approximation of enumerations in php < 8
         const NRML = 0;
         const VRBS = 1;
