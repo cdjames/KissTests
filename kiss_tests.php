@@ -22,7 +22,7 @@ namespace KissTests\Assertions {
         assert_options(ASSERT_BAIL, $bail);
     }
 
-    function assert_exception(string $file, string $function, Array $args=[], string $e_msg="") : bool {
+    function assert_exception(string $file, Array $function, Array $args=[], string $e_msg="") : bool {
         if (strlen($file)) {
             require_once($file);
         }
@@ -30,6 +30,19 @@ namespace KissTests\Assertions {
         
         $result = 0;
         try {
+            switch (count($function)) {
+                case 1:
+                    $function = $function[0];
+                    break;
+
+                case 2:
+                    # no action needed
+                    break;
+
+                default:
+                    return assert(false, $STR_PREAMBLE . implode("::", $function)." must contain 1 or 2 items");
+            }
+
             call_user_func_array($function, $args);
         } catch (\Exception $e) {
             if (!strlen($e_msg)) {
@@ -39,7 +52,10 @@ namespace KissTests\Assertions {
                     $result = 1;
                 }
             }
-        } finally {            
+        } finally {        
+            if (is_array($function)) {
+                $function = implode("::", $function);
+            }    
             return assert($result===1, $STR_PREAMBLE."$function failed with args: ".implode(", ", $args));
         }
     }
@@ -173,7 +189,7 @@ namespace KissTests {
         public function assemble_suite_from_directory(string $path) : bool {
             $result = false;
             if(!is_dir($path)){ // make sure the directory actually exists
-                throw new \Exception("$dir is not a directory");
+                throw new \Exception("$path is not a directory");
             }
             
             $file_pattern = pathjoin(array($path, "$this->filekey*.php"));

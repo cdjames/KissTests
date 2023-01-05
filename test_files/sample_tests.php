@@ -21,21 +21,40 @@ function  test_3( )  :  bool { // failure case
 }
 
 function  test_4( )  :  bool { // failure case using assertion helpers
-    return assert_equal(1, 0);
+    try {
+        return assert_equal(1, 0);
+    } catch (\Throwable $e) {
+        // expect error
+        return true;
+    }
 }
 
 function test_5() : bool { // test for an exception
     function throws_exception() {
         throw new Exception("Example Exception");      
     }
-    return assert_exception("", "throws_exception", [], "Example Exception");
+    return assert_exception("", ["throws_exception"], [], "Example Exception");
 }
 
 function test_6() : bool { // failure case: tested for wrong exception
     function throws_exception2() {
         throw new Exception("Example Exception");      
     }
-    return assert_exception("", "throws_exception2", [], "Different Exception");
+    try {
+        return assert_exception("", ["throws_exception2"], [], "Different Exception");
+    } catch (\Throwable $e) {
+        // expect error
+        return true;
+    }
+}
+
+function test_7() : bool { // failure case: empty array passed for function
+    try {
+        return assert_exception("", [], [], "Different Exception");
+    } catch (\Throwable $e) {
+        // expect error
+        return true;
+    }
 }
 
 function testes_1() : bool { // this is not picked up by default
@@ -51,7 +70,7 @@ function testes_1() : bool { // this is not picked up by default
  * starting with 'tests' will be parsed by default. Of course
  * you can change this to whatever you want
  * ***/
-turn_on_assertions(); // may be optional depending on your setup
+// turn_on_assertions(); // optional depending on your setup
 
 $ts = new TestSuite($mode=en_mode::VRBS, 'sample');
 $assembled = $ts->assemble_suite_from_directory(__DIR__);
