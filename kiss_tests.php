@@ -51,7 +51,7 @@ namespace KissTests\Assertions {
                         break;
 
                     default:
-                        return assert(false, $STR_PREAMBLE . implode("::", $func)." must contain 1 or 2 items");
+                        return assert(false, $STR_PREAMBLE . json_encode($func)." must contain 1 or 2 items");
                 }
             }
 
@@ -66,7 +66,7 @@ namespace KissTests\Assertions {
             }
         } finally {        
             if (is_array($func)) {
-                $func = implode("::", $func);
+                $func = json_encode($func);
             }    
             return assert($result===1, $STR_PREAMBLE."$func failed with args: ".implode(", ", $args));
         }
