@@ -22,7 +22,17 @@ namespace KissTests\Assertions {
         assert_options(ASSERT_BAIL, $bail);
     }
 
-    function assert_exception(string $file, Array $function, Array $args=[], string $e_msg="") : bool {
+    /**
+     * Assert that an exception is thrown
+     * @param mixed $func can be string (static or standalone function name) or array of size 1 or 2.
+     * If array size is 1, it is functionally the same as passing a string. If array size is 2, the first
+     * member must be an object (or $this) and the second should be the function name 
+     * @param string $file *[optional]* a file to include if tested function is not in same file as calling function
+     * @param array $args *[optional]* any args that need to be called with the function
+     * @param string $e_msg *[optional]* the exception message that needs to match with the thrown exception
+     * @return bool
+     */
+    function assert_exception($func, string $file="", Array $args=[], string $e_msg="") : bool {
         if (strlen($file)) {
             require_once($file);
         }
@@ -30,20 +40,22 @@ namespace KissTests\Assertions {
         
         $result = 0;
         try {
-            switch (count($function)) {
-                case 1:
-                    $function = $function[0];
-                    break;
+            if (is_array($func)) {
+                switch (count($func)) {
+                    case 1:
+                        $func = $func[0];
+                        break;
 
-                case 2:
-                    # no action needed
-                    break;
+                    case 2:
+                        # no action needed
+                        break;
 
-                default:
-                    return assert(false, $STR_PREAMBLE . implode("::", $function)." must contain 1 or 2 items");
+                    default:
+                        return assert(false, $STR_PREAMBLE . implode("::", $func)." must contain 1 or 2 items");
+                }
             }
 
-            call_user_func_array($function, $args);
+            call_user_func_array($func, $args);
         } catch (\Exception $e) {
             if (!strlen($e_msg)) {
                 $result = 1;
@@ -53,10 +65,10 @@ namespace KissTests\Assertions {
                 }
             }
         } finally {        
-            if (is_array($function)) {
-                $function = implode("::", $function);
+            if (is_array($func)) {
+                $func = implode("::", $func);
             }    
-            return assert($result===1, $STR_PREAMBLE."$function failed with args: ".implode(", ", $args));
+            return assert($result===1, $STR_PREAMBLE."$func failed with args: ".implode(", ", $args));
         }
     }
     
@@ -100,11 +112,11 @@ namespace KissTests {
         private $func;
         private $args;
 
-        public function __construct(string $function, Array $args=[])
+        public function __construct(string $func, Array $args=[])
         {
             $this->num_passed = 0;
             $this->num_runs = 0;
-            $this->func = $function;
+            $this->func = $func;
             $this->args = $args;
         }
         
@@ -216,8 +228,8 @@ namespace KissTests {
                     // require the containing file
                     require_once($file);
                     // create the tests
-                    foreach ($this->test_functions as $function) {
-                        $this->tests[]=new Test($function);
+                    foreach ($this->test_functions as $func) {
+                        $this->tests[]=new Test($func);
                     }
                 }
 

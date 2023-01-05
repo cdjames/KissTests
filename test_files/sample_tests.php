@@ -33,7 +33,7 @@ function test_5() : bool { // test for an exception
     function throws_exception() {
         throw new Exception("Example Exception");      
     }
-    return assert_exception("", ["throws_exception"], [], "Example Exception");
+    return assert_exception(["throws_exception"], e_msg: "Example Exception");
 }
 
 function test_6() : bool { // failure case: tested for wrong exception
@@ -41,7 +41,7 @@ function test_6() : bool { // failure case: tested for wrong exception
         throw new Exception("Example Exception");      
     }
     try {
-        return assert_exception("", ["throws_exception2"], [], "Different Exception");
+        return assert_exception(["throws_exception2"], e_msg: "Different Exception");
     } catch (\Throwable $e) {
         // expect error
         return true;
@@ -50,13 +50,19 @@ function test_6() : bool { // failure case: tested for wrong exception
 
 function test_7() : bool { // failure case: empty array passed for function
     try {
-        return assert_exception("", [], [], "Different Exception");
+        return assert_exception([], e_msg: "Different Exception");
     } catch (\Throwable $e) {
         // expect error
         return true;
     }
 }
 
+function test_8() : bool { // test for an exception; same as test_5 except uses a string
+    function throws_exception3() {
+        throw new Exception("Example Exception");      
+    }
+    return assert_exception("throws_exception3", e_msg: "Example Exception");
+}
 function testes_1() : bool { // this is not picked up by default
     return true;
 }
